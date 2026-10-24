@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kino 🎬
 
-## Getting Started
+A full-stack, full-featured video sharing platform where users can upload, stream, and interact with videos seamlessly.
 
-First, run the development server:
+> ⚠️ **Status:** Work in Progress (WIP). Active development underway!
 
-```bash
+---
+
+## 🚀 Overview
+
+**Kino** is designed to allow creators to upload, manage, and stream high-quality video content. Built on top of the modern Next.js App Router, Kino leverages serverless database pooling and ImageKit media processing for high-performance streaming.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** [Next.js](https://nextjs.org/) (App Router, TypeScript)
+- **Database:** [MongoDB](https://www.mongodb.com/) via [Mongoose](https://mongoosejs.com/)
+- **Authentication:** NextAuth.js _(In Progress)_
+- **Media Storage & CDN:** ImageKit _(In Progress)_
+- **Styling:** Tailwind CSS
+
+---
+
+## 🏗️ Current Progress & Roadmap
+
+- [x] Database caching utility (`lib/db.ts`) configured for serverless HMR.
+- [x] Database models established (`User`, `Video`).
+- [ ] Authentication setup (NextAuth credentials provider).
+- [ ] ImageKit integration for video uploads.
+- [ ] Core API routes (Video CRUD operations).
+- [ ] Frontend feed, player UI, and upload dashboard.
+
+---
+
+## ⚙️ Getting Started
+
+### 1. Clone the repository
+
+git clone https://github.com/Usama-49/kino.git
+cd kino
+
+### 2. Install dependencies
+
+npm install
+
+### 3. Set up environment variables
+
+Create a `.env` file in the root directory (refer to `.env.example`):
+MONGO_URI=your_mongodb_connection_string
+NEXTAUTH_SECRET=your_nextauth_secret
+
+### 4. Run the development server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 👨‍💻 Author
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Crafted by **Usama** ([@Usama-49](https://github.com/Usama-49)).
