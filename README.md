@@ -16,8 +16,8 @@ A full-stack, full-featured video sharing platform where users can upload, strea
 
 - **Framework:** [Next.js](https://nextjs.org/) (App Router, TypeScript)
 - **Database:** [MongoDB](https://www.mongodb.com/) via [Mongoose](https://mongoosejs.com/)
-- **Authentication:** NextAuth.js _(In Progress)_
-- **Media Storage & CDN:** ImageKit _(In Progress)_
+- **Authentication:** NextAuth.js _(✔️)_
+- **Media Storage & CDN:** ImageKit _(✔️)_
 - **Styling:** Tailwind CSS
 
 ---
@@ -26,8 +26,8 @@ A full-stack, full-featured video sharing platform where users can upload, strea
 
 - [x] Database caching utility (`lib/db.ts`) configured for serverless HMR.
 - [x] Database models established (`User`, `Video`).
-- [ ] Authentication setup (NextAuth credentials provider).
-- [ ] ImageKit integration for video uploads.
+- [x] Authentication setup (NextAuth credentials provider).
+- [x] ImageKit integration for video uploads.
 - [ ] Core API routes (Video CRUD operations).
 - [ ] Frontend feed, player UI, and upload dashboard.
 
@@ -53,8 +53,6 @@ NEXTAUTH_SECRET=your_nextauth_secret
 ### 4. Run the development server
 
 npm run dev
-
-Open http://localhost:3000 in your browser.
 
 ---
 
