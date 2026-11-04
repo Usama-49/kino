@@ -3,7 +3,8 @@ import bcrypt from "bcryptjs";
 
 export interface IUser {
   email: string;
-  password: string;
+  password?: string;
+  provider?: string;
   _id?: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -12,12 +13,13 @@ export interface IUser {
 const userSchema = new Schema<IUser>(
   {
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, required: false }, // Set required to false for Google OAuth
+    provider: { type: String, default: "credentials" },
   },
   { timestamps: true },
 );
 userSchema.pre("save", async function () {
-  if (this.isModified("password")) {
+  if (this.password && this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
 });

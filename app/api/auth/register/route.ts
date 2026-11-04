@@ -1,6 +1,6 @@
 import { connectToDB } from "@/lib/db";
 import userModel from "@/models/user.model";
-import { NextRequest, NextResponse, userAgentFromString } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,10 +16,11 @@ export async function POST(req: NextRequest) {
     const user = await userModel.create({
       email,
       password,
+      provider: "credentials",
     });
     return NextResponse.json({ message: "User Registered Successfully!", user }, { status: 201 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Failed to register user!" }, { status: 400 });
+    return NextResponse.json({ error: "Failed to register user!" }, { status: 500 });
   }
 }

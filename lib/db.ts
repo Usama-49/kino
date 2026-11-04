@@ -1,4 +1,12 @@
 import mongoose from "mongoose";
+import dns from "node:dns";
+
+try {
+  dns.setDefaultResultOrder("ipv4first");
+  dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+} catch (e) {
+  console.error(e);
+}
 
 const MONGODB_URI = process.env.MONGO_URI!;
 
@@ -30,6 +38,7 @@ export async function connectToDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      family: 4,
     };
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((res) => res);
   }

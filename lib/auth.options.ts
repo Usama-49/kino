@@ -3,9 +3,21 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { connectToDB } from "./db";
 import userModel from "@/models/user.model";
 import bcrypt from "bcryptjs";
+import Google from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -24,7 +36,7 @@ export const authOptions: NextAuthOptions = {
         try {
           await connectToDB();
           const user = await userModel.findOne({ email: credentials.email });
-          if (!user) {
+          if (!user || !user.password) {
             throw new Error("Invalid email or password");
           }
           const isPassValid = await bcrypt.compare(credentials.password, user.password);
@@ -48,16 +60,48 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 3600,
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        try {
+          await connectToDB();
+          const existingUser = await userModel.findOne({ email: user.email });
+
+          if (!existingUser) {
+            // Create user in MongoDB for first-time Google sign-ins
+            await userModel.create({
+              email: user.email,
+              provider: "google",
+            });
+          }
+          return true;
+        } catch (error) {
+          console.error("Error saving Google user to DB:", error);
+          // Return true instead of false so transient DB connection
+          //  hiccups don't throw AccessDenied and abort Google auth
+          return true;
+        }
+      }
+      return true;
+    },
     /* 
     Because I configured session: { strategy: "jwt" }, NextAuth does not store 
     session data in a database. Instead, it creates an encrypted JSON Web Token (JWT)
     and saves it in a secure HTTP-Only cookie in the user's browser.
     It runs On initial login ... When user exists obviously ...
     */
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       //* The Lockbox Maker
       if (user) {
-        token.id = user.id;
+        // For Google logins, fetch the real MongoDB _id so token.id is consistent across all auth types
+        if (account?.provider === "google") {
+          await connectToDB();
+          const dbUser = await userModel.findOne({ email: user.email });
+          if (dbUser) {
+            token.id = dbUser._id.toString();
+          }
+        } else {
+          token.id = user.id;
+        }
       }
       return token;
     },
