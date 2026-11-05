@@ -2,7 +2,7 @@
 
 A full-stack, full-featured video sharing platform where users can upload, stream, and interact with videos seamlessly.
 
-> ⚠️ **Status:** Work in Progress (WIP). Active development underway!
+> ✅ **Status:** Completed (Final touch & minor optimizations on the way 🔃)
 
 ---
 
@@ -28,8 +28,8 @@ A full-stack, full-featured video sharing platform where users can upload, strea
 - [x] Database models established (`User`, `Video`).
 - [x] Authentication setup (NextAuth credentials provider).
 - [x] ImageKit integration for video uploads.
-- [ ] Core API routes (Video CRUD operations).
-- [ ] Frontend feed, player UI, and upload dashboard.
+- [x] Core API routes (Video CRUD operations).
+- [x] Frontend feed, player UI, and upload dashboard.
 
 ---
 

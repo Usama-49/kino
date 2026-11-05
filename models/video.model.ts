@@ -11,12 +11,16 @@ export interface IVideo {
   description: string;
   videoUrl: string;
   thumbnailUrl: string;
+  fileId?: string; // changed: added fileId to interface
   controls?: boolean;
   transformation?: {
     height: number;
     width: number;
     quality?: number;
   };
+  user?: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const videoSchema = new Schema<IVideo>(
@@ -25,6 +29,7 @@ const videoSchema = new Schema<IVideo>(
     description: { type: String, required: true },
     videoUrl: { type: String, required: true },
     thumbnailUrl: { type: String, required: true },
+    fileId: { type: String },
     controls: { type: Boolean, default: true },
     transformation: {
       type: {
@@ -33,6 +38,11 @@ const videoSchema = new Schema<IVideo>(
         quality: { type: Number, min: 1, max: 100, default: 100 },
       },
       default: () => ({}),
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   { timestamps: true },

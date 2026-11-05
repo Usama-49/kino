@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
           };
         } catch (err) {
-          console.log(err);
+          console.error("Credentials Auth Error:", err);
           throw new Error(err instanceof Error ? err.message : "Authentication failed");
         }
       },
@@ -89,15 +89,23 @@ export const authOptions: NextAuthOptions = {
     and saves it in a secure HTTP-Only cookie in the user's browser.
     It runs On initial login ... When user exists obviously ...
     */
+
     async jwt({ token, user, account }) {
-      //* The Lockbox Maker
+      // For Google logins, fetch the real MongoDB _id so token.id is consistent across all auth types
       if (user) {
-        // For Google logins, fetch the real MongoDB _id so token.id is consistent across all auth types
         if (account?.provider === "google") {
-          await connectToDB();
-          const dbUser = await userModel.findOne({ email: user.email });
-          if (dbUser) {
-            token.id = dbUser._id.toString();
+          try {
+            await connectToDB();
+            const dbUser = await userModel.findOne({ email: user.email });
+            if (dbUser) {
+              token.id = dbUser._id.toString();
+            } else {
+              token.id = user.id;
+            }
+          } catch (err) {
+            console.error("Error fetching Google user in JWT callback:", err);
+            // Assigned fallback user.id so JWT token generation succeeds even when DB connection fails
+            token.id = user.id;
           }
         } else {
           token.id = user.id;

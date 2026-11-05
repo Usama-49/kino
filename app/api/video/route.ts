@@ -7,7 +7,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET() {
   try {
     await connectToDB();
-    const videos = await videoModel.find({}).sort({ createdAt: -1 }).lean<IVideo[]>();
+    const videos = await videoModel
+      .find({})
+      .populate("user", "email")
+      .sort({ createdAt: -1 })
+      .lean();
+
     if (!videos || videos.length < 1) {
       return NextResponse.json([], { status: 200 });
     }
@@ -21,7 +26,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized!" }, { status: 401 });
     }
     await connectToDB();
@@ -29,7 +34,15 @@ export async function POST(request: NextRequest) {
     if (!body.title || !body.description || !body.videoUrl || !body.thumbnailUrl) {
       return NextResponse.json({ error: "Required Fields Missing!" }, { status: 400 });
     }
-    await videoModel.create(body);
+
+    // user ID and fileId from upload payload
+    const videoData = {
+      ...body,
+      user: session.user.id,
+      fileId: body.fileId,
+    };
+
+    await videoModel.create(videoData);
     return NextResponse.json({ message: "Video Uploaded!" }, { status: 201 });
   } catch (err) {
     console.error(err);

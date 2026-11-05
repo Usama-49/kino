@@ -1,11 +1,14 @@
 import mongoose from "mongoose";
 import dns from "node:dns";
+import dnsPromises from "node:dns/promises";
 
+// Set Cloudflare & Google DNS on node:dns and node:dns/promises to fix Windows SRV lookups
 try {
   dns.setDefaultResultOrder("ipv4first");
-  dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+  dns.setServers(["1.1.1.1", "8.8.8.8"]);
+  dnsPromises.setServers(["1.1.1.1", "8.8.8.8"]);
 } catch (e) {
-  console.error(e);
+  console.error("DNS Configuration Warning:", e);
 }
 
 const MONGODB_URI = process.env.MONGO_URI!;
@@ -13,6 +16,7 @@ const MONGODB_URI = process.env.MONGO_URI!;
 if (!MONGODB_URI) {
   throw new Error("Plz define MONGO_URI in env variables!");
 }
+
 declare global {
   var mongoose:
     | {
@@ -32,20 +36,21 @@ export async function connectToDB() {
   if (!cached) {
     cached = global.mongoose = { conn: null, promise: null };
   }
-  if (cached?.conn) {
+  if (cached.conn) {
     return cached.conn;
   }
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      family: 4,
+      serverSelectionTimeoutMS: 5000,
     };
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((res) => res);
   }
   try {
-    cached.conn = await cached?.promise;
+    cached.conn = await cached.promise;
   } catch (err) {
     cached.promise = null;
+    console.error("MongoDB Connection Failed:", err);
     throw err;
   }
   return cached.conn;

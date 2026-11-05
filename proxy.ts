@@ -15,7 +15,10 @@ export async function proxy(request: NextRequest) {
 
   // 2. Identify target route categories
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register");
-  const isProtectedRoute = pathname.startsWith("/dashboard") || pathname.startsWith("/profile");
+  const isProtectedRoute =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/upload");
 
   // 3. Unauthenticated user trying to visit private pages -> Kick to /login
   if (isProtectedRoute && !isAuthenticated) {
@@ -33,7 +36,14 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-// 6. Matcher config: Only run proxy.ts on relevant routes
+// 6. Matcher config: Run proxy.ts on protected and auth routes
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile/:path*", "/login", "/register"],
+  matcher: [
+    "/dashboard/:path*",
+    "/profile/:path*",
+    "/upload",
+    "/upload/:path*",
+    "/login",
+    "/register",
+  ],
 };
